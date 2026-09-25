@@ -1,0 +1,337 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(15, 23, 42, 0.45);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  z-index: 100;
+}
+
+.create-ticket-modal {
+  width: 100%;
+  max-width: 680px;
+
+  max-height: calc(100vh - 48px);
+
+  background: #ffffff;
+
+  border-radius: 16px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 20px 50px rgba(15, 23, 42, 0.2);
+}
+
+/* Header */
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  padding: 26px 28px;
+
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header h2 {
+  margin: 0 0 5px;
+
+  color: #0f172a;
+
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.modal-header p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 16px;
+}
+
+.modal-close {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  background: transparent;
+
+  color: #64748b;
+
+  font-size: 28px;
+  line-height: 1;
+
+  border-radius: 8px;
+}
+
+.modal-close:hover {
+  background: #f1f5f9;
+}
+
+/* Body */
+
+.modal-body {
+  padding: 28px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-bottom: 22px;
+}
+
+.form-group label {
+  color: #334155;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+
+  border: 1px solid #cbd5e1;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: #334155;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.form-group input,
+.form-group select {
+  height: 48px;
+
+  padding: 0 14px;
+}
+
+.form-group textarea {
+  min-height: 112px;
+
+  padding: 14px;
+
+  resize: vertical;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #94a3b8;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-group select:disabled {
+  background: #f8fafc;
+
+  color: #94a3b8;
+
+  cursor: not-allowed;
+}
+
+/* Form row */
+
+.form-row {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 20px;
+}
+
+/* Auto assign */
+
+.auto-assign {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 12px;
+
+  padding: 18px;
+
+  margin-top: 4px;
+  margin-bottom: 24px;
+
+  border: 1px solid #dbe3ee;
+
+  border-radius: 12px;
+
+  cursor: pointer;
+}
+
+.auto-assign input {
+  width: 18px;
+  height: 18px;
+
+  margin-top: 2px;
+
+  accent-color: #2563eb;
+
+  flex-shrink: 0;
+}
+
+.auto-assign div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.auto-assign strong {
+  color: #334155;
+
+  font-size: 14px;
+}
+
+.auto-assign span {
+  color: #64748b;
+
+  font-size: 13px;
+
+  line-height: 1.4;
+}
+
+/* Opening date */
+
+.opening-date {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  color: #64748b;
+
+  font-size: 14px;
+}
+
+.opening-date strong {
+  color: #475569;
+}
+
+.date-icon {
+  font-size: 18px;
+}
+
+/* Footer */
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 12px;
+
+  padding: 18px 28px;
+
+  background: #f8fafc;
+
+  border-top: 1px solid #e2e8f0;
+}
+
+.secondary-button,
+.modal-footer .primary-button {
+  height: 46px;
+
+  padding: 0 18px;
+
+  border-radius: 10px;
+
+  font-weight: 600;
+}
+
+.secondary-button {
+  border: 1px solid #cbd5e1;
+
+  background: #ffffff;
+
+  color: #475569;
+}
+
+.secondary-button:hover {
+  background: #f8fafc;
+}
+
+.modal-footer .primary-button {
+  border: none;
+
+  background: #2563eb;
+
+  color: #ffffff;
+}
+
+.modal-footer .primary-button:hover {
+  background: #1d4ed8;
+}
+
+.modal-footer button:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+  .modal-overlay {
+    padding: 12px;
+  }
+
+  .create-ticket-modal {
+    max-height: calc(100vh - 24px);
+  }
+
+  .modal-header,
+  .modal-body {
+    padding: 20px;
+  }
+
+  .modal-footer {
+    padding: 16px 20px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+
+    gap: 0;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .modal-footer button {
+    width: 100%;
+  }
+}

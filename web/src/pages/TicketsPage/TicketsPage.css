@@ -1,0 +1,65 @@
+.tickets-page {
+	width: 100%;
+	padding: 32px 40px;
+	box-sizing: border-box;
+}
+
+.tickets-page-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 28px;
+}
+
+.tickets-page-header h1 {
+	margin: 0;
+	color: #0f172a;
+	font-size: 32px;
+	font-weight: 700;
+}
+
+.tickets-page-header p {
+	margin: 8px 0 0;
+	color: #64748b;
+	font-size: 15px;
+}
+
+.tickets-page-card {
+	padding: 24px 28px;
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.tickets-page-message {
+	margin: 0;
+	color: #64748b;
+}
+
+.tickets-page-action {
+	height: 46px;
+	padding: 0 18px;
+	border: none;
+	border-radius: 10px;
+	background: #2563eb;
+	color: #ffffff;
+	font-weight: 600;
+	transition: background 0.2s;
+}
+
+.tickets-page-action:hover {
+	background: #1d4ed8;
+}
+
+@media (max-width: 700px) {
+	.tickets-page {
+		padding: 24px 20px;
+	}
+
+	.tickets-page-header {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+}
