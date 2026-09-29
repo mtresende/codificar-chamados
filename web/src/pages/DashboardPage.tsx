@@ -1,63 +1,32 @@
+import { useState } from "react";
+
 import { TicketTable } from "../components/TicketTable";
+import { ConfirmDeleteTicketModal } from "../components/ConfirmDeleteTicketModal";
+import { TicketDetailsModal } from "../components/TicketDetailsModal";
+import { ChangeStatusModal } from "../components/ChangeStatusModal";
+import { CreateTicketModal } from "../components/CreateTicketModal";
 import { useTickets } from "../hooks/useTickets";
 import { useAssignees } from "../hooks/useAssignees";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { deleteTicket } from "../api/tickets";
-import { assigneesQueryKey, ticketsQueryKey } from "../api/queryKeys";
-import { ConfirmDeleteTicketModal } from "../components/ConfirmDeleteTicketModal";
+import { useUpdateTicket, useChangeTicketStatus } from "../hooks/useTicketMutations";
+import { useDeleteTicket } from "../hooks/useDeleteTicket";
 import type { Ticket } from "../types/ticket";
 
 export function DashboardPage() {
   const ticketsQuery = useTickets();
   const assigneesQuery = useAssignees();
-  const queryClient = useQueryClient();
   const [ticketToDelete, setTicketToDelete] = useState<Ticket | null>(null);
+  const [ticketToEdit, setTicketToEdit] = useState<Ticket | null>(null);
+  const [ticketToView, setTicketToView] = useState<Ticket | null>(null);
+  const [ticketToChangeStatus, setTicketToChangeStatus] = useState<Ticket | null>(null);
+
+  const deleteTicketMutation = useDeleteTicket();
+  const updateTicketMutation = useUpdateTicket();
+  const changeStatusMutation = useChangeTicketStatus();
 
   const tickets = ticketsQuery.data ?? [];
   const assignees = assigneesQuery.data ?? [];
   const loading = ticketsQuery.isLoading;
   const errorMessage = ticketsQuery.error?.message ?? "";
-
-const deleteTicketMutation = useMutation({
-  mutationFn: deleteTicket,
-
-  onMutate: async (ticketId) => {
-    await queryClient.cancelQueries({ queryKey: ticketsQueryKey });
-
-    const previousTickets =
-      queryClient.getQueryData<Ticket[]>(ticketsQueryKey);
-
-    queryClient.setQueryData<Ticket[]>(
-      ticketsQueryKey,
-      (currentTickets = []) =>
-        currentTickets.filter((ticket) => ticket.id !== ticketId)
-    );
-
-    setTicketToDelete(null);
-
-    return { previousTickets };
-  },
-
-  onError: (_error, _ticketId, context) => {
-    if (context?.previousTickets) {
-      queryClient.setQueryData(
-        ticketsQueryKey,
-        context.previousTickets
-      );
-    }
-  },
-
-  onSettled: () => {
-    queryClient.invalidateQueries({
-      queryKey: ticketsQueryKey,
-    });
-
-    queryClient.invalidateQueries({
-      queryKey: assigneesQueryKey,
-    });
-  },
-});
 
   const totalTickets = tickets.length;
 
@@ -75,18 +44,6 @@ const deleteTicketMutation = useMutation({
 
   return (
     <div className="w-full py-8 px-10 box-border max-[700px]:py-6 max-[700px]:px-5">
-
-      <div className="mb-7">
-
-        <div>
-          <h1 className="m-0 text-slate-900 text-[32px] font-bold">Dashboard</h1>
-
-          <p className="mt-2 mb-0 text-slate-500 text-[15px]">
-            Visão geral dos chamados da equipe.
-          </p>
-        </div>
-
-      </div>
 
       <div className="grid grid-cols-4 gap-[18px] mb-7 max-[1000px]:grid-cols-2 max-[700px]:grid-cols-1">
 
@@ -156,11 +113,28 @@ const deleteTicketMutation = useMutation({
           <TicketTable
             tickets={tickets}
             assignees={assignees}
+            onViewTicket={(ticket) => setTicketToView(ticket)}
             onDeleteTicket={(ticket) => setTicketToDelete(ticket)}
+            onEditTicket={(ticket) => setTicketToEdit(ticket)}
           />
         )}
 
       </section>
+
+      {ticketToEdit && (
+        <CreateTicketModal
+          ticket={ticketToEdit}
+          onClose={() => setTicketToEdit(null)}
+          onSubmit={async (data) => {
+            await updateTicketMutation.mutateAsync({
+              id: ticketToEdit.id,
+              data,
+              status: ticketToEdit.status,
+            });
+            setTicketToEdit(null);
+          }}
+        />
+      )}
 
       {ticketToDelete && (
         <ConfirmDeleteTicketModal
@@ -169,7 +143,40 @@ const deleteTicketMutation = useMutation({
           loading={deleteTicketMutation.isPending}
           onClose={() => setTicketToDelete(null)}
           onConfirm={async () => {
+            setTicketToDelete(null);
             await deleteTicketMutation.mutateAsync(ticketToDelete.id);
+          }}
+        />
+      )}
+
+      {ticketToView && (
+        <TicketDetailsModal
+          ticket={ticketToView}
+          assignees={assignees}
+          onClose={() => setTicketToView(null)}
+          onEdit={() => {
+            setTicketToEdit(ticketToView);
+            setTicketToView(null);
+          }}
+          onChangeStatus={() => {
+            setTicketToChangeStatus(ticketToView);
+            setTicketToView(null);
+          }}
+        />
+      )}
+
+      {ticketToChangeStatus && (
+        <ChangeStatusModal
+          ticket={ticketToChangeStatus}
+          loading={changeStatusMutation.isPending}
+          onClose={() => setTicketToChangeStatus(null)}
+          onSave={async (status) => {
+            await changeStatusMutation.mutateAsync({
+              ticket: ticketToChangeStatus,
+              status,
+            });
+            setTicketToChangeStatus(null);
+            setTicketToView(null);
           }}
         />
       )}

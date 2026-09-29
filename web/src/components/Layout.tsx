@@ -17,7 +17,7 @@ export function Layout({
       </aside>
 
       <main className="flex-1 min-w-0 min-h-screen overflow-x-hidden max-[600px]:w-full">
-        <Outlet context={{ onNewTicket }} />
+        <Outlet />
       </main>
 
     </div>

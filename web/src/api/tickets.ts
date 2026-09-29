@@ -4,14 +4,10 @@ import type { paths } from "./generated/openapi";
 import type {
   Ticket,
   TicketInput,
-  TicketStatus,
+  TicketUpdateInput,
 } from "../types/ticket";
 
 type TicketListQuery = paths["/tickets"]["get"]["parameters"]["query"];
-type TicketUpdateInput = TicketInput & {
-  status: TicketStatus;
-  auto_reassign: boolean;
-};
 
 function getErrorMessage(error: unknown, fallback: string) {
   if (
@@ -44,21 +40,23 @@ async function unwrapResponse<T>(
 export async function getTickets(
   params?: TicketListQuery
 ): Promise<Ticket[]> {
-  const response = await apiClient.GET("/tickets", {
-    params: params ? { query: params } : undefined,
-  });
+  let response;
 
-  return unwrapResponse(response, "Falha ao listar chamados");
-}
+  try {
+    response = await apiClient.GET("/tickets", {
+      params: params ? { query: params } : undefined,
+    });
+  } catch {
+    throw new Error("Falha ao listar chamados");
+  }
 
-export async function getTicket(
-  id: number
-): Promise<Ticket> {
-  const response = await apiClient.GET("/tickets/{id}", {
-    params: { path: { id } },
-  });
+  if (response.error) {
+    throw new Error(
+      getErrorMessage(response.error, "Falha ao listar chamados")
+    );
+  }
 
-  return unwrapResponse(response, "Falha ao buscar chamado");
+  return response.data ?? [];
 }
 
 export async function createTicket(

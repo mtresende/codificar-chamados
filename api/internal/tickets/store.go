@@ -96,7 +96,7 @@ func (s *Store) List(ctx context.Context, f TicketFilter) ([]Ticket, error) {
 	}
 	defer rows.Close()
 
-	var out []Ticket
+	out := []Ticket{}
 	for rows.Next() {
 		var t Ticket
 		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.Priority, &t.Status, &t.AssigneeID, &t.OpenedAt, &t.UpdatedAt); err != nil {

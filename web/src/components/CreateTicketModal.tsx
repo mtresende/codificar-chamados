@@ -1,37 +1,45 @@
-// CreateTicketModal.tsx
 import { useState } from "react";
 import { Clock, X } from "lucide-react";
 
 import { useAssignees } from "../hooks/useAssignees";
-
-export interface CreateTicketData {
-  title: string;
-  description: string;
-  priority: "low" | "medium" | "high";
-  assignee_id: number;
-}
+import type { Ticket, TicketInput } from "../types/ticket";
 
 interface CreateTicketModalProps {
+  ticket?: Ticket;
   onClose: () => void;
-  onSubmit: (data: CreateTicketData) => Promise<void>;
+  onSubmit: (data: TicketInput) => Promise<void>;
+  initialAssigneeId?: number;
 }
 
 export function CreateTicketModal({
+  ticket,
+  initialAssigneeId,
   onClose,
   onSubmit,
 }: CreateTicketModalProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const isEditing = Boolean(ticket);
 
-  const [priority, setPriority] =
-    useState<"low" | "medium" | "high">("low");
+  const [title, setTitle] = useState(ticket?.title ?? "");
+  const [description, setDescription] = useState(ticket?.description ?? "");
 
-  const [assigneeId, setAssigneeId] = useState("");
+  const [priority, setPriority] = useState<TicketInput["priority"]>(
+    ticket?.priority ?? "low"
+  );
+
+  const [assigneeId, setAssigneeId] = useState(
+    ticket?.assignee_id
+      ? String(ticket.assignee_id)
+      : initialAssigneeId
+        ? String(initialAssigneeId)
+        : ""
+  );
 
   const { data: assignees = [], isLoading: loadingAssignees } = useAssignees();
 
   const [autoAssign, setAutoAssign] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const openedAt = ticket ? new Date(ticket.opened_at) : new Date();
 
   async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>
@@ -55,7 +63,7 @@ export function CreateTicketModal({
       });
     } catch (error) {
       console.error(
-        "Erro ao criar chamado:",
+        isEditing ? "Erro ao atualizar chamado:" : "Erro ao criar chamado:",
         error
       );
     } finally {
@@ -74,16 +82,16 @@ export function CreateTicketModal({
     >
       <div className="w-full max-w-[680px] max-h-[calc(100vh-48px)] bg-white rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(15,23,42,0.2)] max-[600px]:max-h-[calc(100vh-24px)]">
 
-        {/* Header */}
-
         <div className="flex items-start justify-between py-[26px] px-7 border-b border-slate-200 max-[600px]:p-5">
           <div>
             <h2 className="m-0 mb-[5px] text-slate-900 text-2xl leading-[1.2]">
-              Novo chamado
+              {isEditing ? "Editar chamado" : "Novo chamado"}
             </h2>
 
             <p className="m-0 text-slate-500 text-base">
-              Preencha os dados da nova solicitação.
+              {isEditing
+                ? "Atualize os dados da solicitação."
+                : "Preencha os dados da nova solicitação."}
             </p>
           </div>
 
@@ -100,8 +108,6 @@ export function CreateTicketModal({
         <form onSubmit={handleSubmit}>
 
           <div className="p-7 max-[600px]:p-5">
-
-            {/* Título */}
 
             <div className="flex flex-col gap-2 mb-[22px]">
               <label htmlFor="title" className="text-slate-700 text-sm font-semibold">
@@ -120,8 +126,6 @@ export function CreateTicketModal({
               />
             </div>
 
-            {/* Descrição */}
-
             <div className="flex flex-col gap-2 mb-[22px]">
               <label htmlFor="description" className="text-slate-700 text-sm font-semibold">
                 Descrição
@@ -138,8 +142,6 @@ export function CreateTicketModal({
               />
             </div>
 
-            {/* Prioridade e responsável */}
-
             <div className="grid grid-cols-2 gap-5 max-[600px]:grid-cols-1 max-[600px]:gap-0">
 
               <div className="flex flex-col gap-2 mb-[22px]">
@@ -152,10 +154,7 @@ export function CreateTicketModal({
                   value={priority}
                   onChange={(event) =>
                     setPriority(
-                      event.target.value as
-                        | "low"
-                        | "medium"
-                        | "high"
+                      event.target.value as TicketInput["priority"]
                     )
                   }
                   className="w-full h-12 px-3.5 border border-slate-300 rounded-[10px] bg-white text-slate-700 outline-none transition-[border-color,box-shadow] duration-200 focus:border-blue-600 focus:shadow-[0_0_0_3px_rgba(37,99,235,0.1)]"
@@ -212,8 +211,6 @@ export function CreateTicketModal({
 
             </div>
 
-            {/* Atribuição automática */}
-
             <label className="flex items-start gap-3 p-[18px] mt-1 mb-6 border border-[#dbe3ee] rounded-xl cursor-pointer">
 
               <input
@@ -241,8 +238,6 @@ export function CreateTicketModal({
 
             </label>
 
-            {/* Data de abertura */}
-
             <div className="flex items-center gap-[9px] text-slate-500 text-sm">
 
               <Clock size={17} />
@@ -250,24 +245,19 @@ export function CreateTicketModal({
               <span>
                 Data de abertura:{" "}
                 <strong className="text-slate-600">
-                  {new Date().toLocaleString(
-                    "pt-BR",
-                    {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }
-                  )}
+                  {openedAt.toLocaleString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </strong>
               </span>
 
             </div>
 
           </div>
-
-          {/* Footer */}
 
           <div className="flex items-center justify-end gap-3 py-[18px] px-7 bg-slate-50 border-t border-slate-200 max-[600px]:py-4 max-[600px]:px-5 max-[600px]:flex-col-reverse">
 
@@ -291,8 +281,12 @@ export function CreateTicketModal({
               className="h-[46px] px-[18px] rounded-[10px] font-semibold border-none bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed max-[600px]:w-full"
             >
               {loading
-                ? "Criando..."
-                : "Criar chamado"}
+                ? isEditing
+                  ? "Salvando..."
+                  : "Criando..."
+                : isEditing
+                  ? "Salvar alterações"
+                  : "Criar chamado"}
             </button>
 
           </div>

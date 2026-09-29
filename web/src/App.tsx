@@ -5,33 +5,31 @@ import {
   Route,
 } from "react-router-dom";
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Layout } from "./components/Layout";
-import {
-  CreateTicketModal,
-  type CreateTicketData,
-} from "./components/CreateTicketModal";
+import { CreateTicketModal } from "./components/CreateTicketModal";
 import { DashboardPage } from "./pages/DashboardPage";
-import { TicketsPage } from "./pages/TicketsPage";
-import { createTicket } from "./api/tickets";
-import { assigneesQueryKey, ticketsQueryKey } from "./api/queryKeys";
+import { DistributionPage } from "./pages/DistributionPage";
+import { useCreateTicket } from "./hooks/useCreateTicket";
+import type { TicketInput } from "./types/ticket";
 
 function App() {
-  const [isCreateTicketOpen, setIsCreateTicketOpen] = useState(false);
-  const queryClient = useQueryClient();
+  const [isCreateTicketOpen, setIsCreateTicketOpen] =
+    useState(false);
 
-  const createTicketMutation = useMutation({
-    mutationFn: createTicket,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ticketsQueryKey });
-      await queryClient.invalidateQueries({ queryKey: assigneesQueryKey });
-      setIsCreateTicketOpen(false);
-    },
-  });
+  const [initialAssigneeId, setInitialAssigneeId] =
+    useState<number | undefined>(undefined);
 
-  async function handleCreateTicket(data: CreateTicketData) {
+  const createTicketMutation = useCreateTicket();
+
+  async function handleCreateTicket(data: TicketInput) {
     await createTicketMutation.mutateAsync(data);
+    setIsCreateTicketOpen(false);
+  }
+
+  function handleNewTicket(assigneeId?: number) {
+    setInitialAssigneeId(assigneeId);
+    setIsCreateTicketOpen(true);
   }
 
   return (
@@ -40,19 +38,35 @@ function App() {
         <Route
           element={
             <Layout
-              onNewTicket={() => setIsCreateTicketOpen(true)}
+              onNewTicket={() => handleNewTicket()}
             />
           }
         >
           <Route index element={<DashboardPage />} />
-          <Route path="dashboard" element={<Navigate to="/" replace />} />
-          <Route path="tickets" element={<TicketsPage />} />
+
+          <Route
+            path="dashboard"
+            element={<Navigate to="/" replace />}
+          />
+
+          <Route
+            path="distribution"
+            element={
+              <DistributionPage
+                onNewTicket={handleNewTicket}
+              />
+            }
+          />
         </Route>
       </Routes>
 
       {isCreateTicketOpen && (
         <CreateTicketModal
-          onClose={() => setIsCreateTicketOpen(false)}
+          initialAssigneeId={initialAssigneeId}
+          onClose={() => {
+            setIsCreateTicketOpen(false);
+            setInitialAssigneeId(undefined);
+          }}
           onSubmit={handleCreateTicket}
         />
       )}

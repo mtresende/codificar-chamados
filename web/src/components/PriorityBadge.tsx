@@ -1,14 +1,11 @@
-export type Priority =
-  | "low"
-  | "medium"
-  | "high";
+import type { TicketPriority } from "../types/ticket";
 
 interface PriorityBadgeProps {
-  priority: Priority;
+  priority: TicketPriority;
 }
 
 const priorityLabels: Record<
-  Priority,
+  TicketPriority,
   string
 > = {
   low: "Baixa",
@@ -16,7 +13,7 @@ const priorityLabels: Record<
   high: "Alta",
 };
 
-const priorityStyles: Record<Priority, string> = {
+const priorityStyles: Record<TicketPriority, string> = {
   low: "bg-slate-100 border-[#dbe3ee] text-slate-600",
   medium: "bg-amber-50 border-amber-200 text-amber-600",
   high: "bg-rose-50 border-rose-200 text-red-500",

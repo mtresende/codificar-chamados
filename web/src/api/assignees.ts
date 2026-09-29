@@ -1,10 +1,9 @@
 import { apiClient } from "./client";
-import type { components } from "./generated/openapi";
 
-import type { Assignee } from "../types/assignee";
-
-export type AssigneeWorkload =
-  components["schemas"]["AssigneeWorkload"];
+import type {
+  Assignee,
+  AssigneeWorkload,
+} from "../types/assignee";
 
 export async function getAssignees(): Promise<Assignee[]> {
   const response = await apiClient.GET("/assignees");
