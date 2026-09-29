@@ -7,13 +7,13 @@ import {
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { Layout } from "./components/Layout/Layout";
+import { Layout } from "./components/Layout";
 import {
   CreateTicketModal,
   type CreateTicketData,
-} from "./components/CreateTicketModal/CreateTicketModal";
-import { DashboardPage } from "./pages/DashboardPage/DashboardPage";
-import { TicketsPage } from "./pages/TicketsPage/TicketsPage";
+} from "./components/CreateTicketModal";
+import { DashboardPage } from "./pages/DashboardPage";
+import { TicketsPage } from "./pages/TicketsPage";
 import { createTicket } from "./api/tickets";
 import { assigneesQueryKey, ticketsQueryKey } from "./api/queryKeys";
 

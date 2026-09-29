@@ -4,13 +4,11 @@ import {
   Search,
 } from "lucide-react";
 
-import type { Assignee } from "../../types/assignee";
-import type { Ticket } from "../../types/ticket";
+import type { Assignee } from "../types/assignee";
+import type { Ticket } from "../types/ticket";
 
-import { PriorityBadge } from "../PriorityBadge/PriorityBadge";
-import { StatusBadge } from "../StatusBadge/StatusBadge";
-
-import "./TicketTable.css";
+import { PriorityBadge } from "./PriorityBadge";
+import { StatusBadge } from "./StatusBadge";
 
 interface TicketTableProps {
   tickets: Ticket[];
@@ -19,13 +17,16 @@ interface TicketTableProps {
 }
 
 const columns = [
-  { key: "ticket", label: "CHAMADO" },
-  { key: "priority", label: "PRIORIDADE" },
-  { key: "status", label: "STATUS" },
-  { key: "assignee", label: "RESPONSÁVEL" },
-  { key: "opened_at", label: "ABERTURA" },
-  { key: "actions", label: "AÇÕES" },
+  { key: "ticket", label: "CHAMADO", width: "w-[30%]" },
+  { key: "priority", label: "PRIORIDADE", width: "w-[13%]" },
+  { key: "status", label: "STATUS", width: "w-[14%]" },
+  { key: "assignee", label: "RESPONSÁVEL", width: "w-[17%]" },
+  { key: "opened_at", label: "ABERTURA", width: "w-[16%]" },
+  { key: "actions", label: "AÇÕES", width: "w-[10%] text-right" },
 ];
+
+const selectClasses =
+  "w-[180px] h-[46px] px-3.5 border border-[#dbe3ef] rounded-[10px] bg-white text-slate-700 text-sm outline-none cursor-pointer focus:border-blue-600";
 
 export function TicketTable({
   tickets,
@@ -44,22 +45,23 @@ export function TicketTable({
   }
 
   return (
-    <div className="ticket-table-wrapper">
+    <div className="w-full">
 
       {/* Filtros */}
 
-      <div className="ticket-filters">
+      <div className="flex items-center gap-[14px] py-5 px-7 border-b border-[#eef2f7] bg-white">
 
-        <div className="ticket-search">
-          <Search size={17} />
+        <div className="relative flex items-center flex-1 h-[46px] border border-[#dbe3ef] rounded-[10px] bg-white text-slate-400 focus-within:border-blue-600">
+          <Search size={17} className="ml-[15px] shrink-0" />
 
           <input
             type="text"
             placeholder="Buscar por título ou descrição..."
+            className="w-full h-full px-3.5 border-none outline-none bg-transparent text-slate-700 text-sm placeholder:text-slate-400"
           />
         </div>
 
-        <select>
+        <select className={selectClasses}>
           <option value="">
             Todos os status
           </option>
@@ -81,7 +83,7 @@ export function TicketTable({
           </option>
         </select>
 
-        <select>
+        <select className={selectClasses}>
           <option value="">
             Prioridade
           </option>
@@ -99,7 +101,7 @@ export function TicketTable({
           </option>
         </select>
 
-        <select>
+        <select className={selectClasses}>
           <option value="">
             Responsável
           </option>
@@ -109,14 +111,19 @@ export function TicketTable({
 
       {/* Tabela */}
 
-      <div className="ticket-table">
+      <div className="w-full overflow-x-auto bg-white">
 
-        <table>
+        <table className="w-full min-w-[900px] border-collapse table-fixed">
 
-          <thead>
+          <thead className="bg-slate-50">
             <tr>
               {columns.map((column) => (
-                <th key={column.key}>{column.label}</th>
+                <th
+                  key={column.key}
+                  className={`py-[15px] px-[18px] border-t border-b border-[#eef2f7] text-slate-500 text-xs font-bold tracking-[0.5px] text-left whitespace-nowrap ${column.width}`}
+                >
+                  {column.label}
+                </th>
               ))}
             </tr>
           </thead>
@@ -128,7 +135,7 @@ export function TicketTable({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="ticket-empty"
+                  className="py-[18px] px-[18px] text-center text-slate-500"
                 >
                   Nenhum chamado encontrado.
                 </td>
@@ -138,18 +145,18 @@ export function TicketTable({
 
               tickets.map((ticket) => (
 
-                <tr key={ticket.id}>
+                <tr key={ticket.id} className="hover:bg-slate-50">
 
                   {/* Chamado */}
 
-                  <td>
-                    <div className="ticket-title">
+                  <td className="p-[18px] border-b border-[#eef2f7] text-slate-600 text-sm align-middle">
+                    <div className="flex flex-col gap-1">
 
-                      <strong>
+                      <strong className="text-slate-900 text-[15px] font-semibold">
                         {ticket.title}
                       </strong>
 
-                      <span>
+                      <span className="text-slate-400 text-[13px]">
                         CH-{ticket.id}
                       </span>
 
@@ -158,7 +165,7 @@ export function TicketTable({
 
                   {/* Prioridade */}
 
-                  <td>
+                  <td className="p-[18px] border-b border-[#eef2f7] text-slate-600 text-sm align-middle">
                     <PriorityBadge
                       priority={ticket.priority}
                     />
@@ -166,7 +173,7 @@ export function TicketTable({
 
                   {/* Status */}
 
-                  <td>
+                  <td className="p-[18px] border-b border-[#eef2f7] text-slate-600 text-sm align-middle">
                     <StatusBadge
                       status={ticket.status}
                     />
@@ -174,8 +181,8 @@ export function TicketTable({
 
                   {/* Responsável */}
 
-                  <td>
-                    <div className="ticket-assignee">
+                  <td className="p-[18px] border-b border-[#eef2f7] text-slate-600 text-sm align-middle">
+                    <div className="flex items-center gap-2.5 whitespace-nowrap">
 
                       <span>
                         {getAssigneeName(ticket.assignee_id)}
@@ -184,8 +191,8 @@ export function TicketTable({
                     </div>
                   </td>
 
-                  <td>
-                    <span className="ticket-date">
+                  <td className="p-[18px] border-b border-[#eef2f7] text-slate-600 text-sm align-middle">
+                    <span className="text-slate-500 whitespace-nowrap">
                       {new Date(
                         ticket.opened_at
                       ).toLocaleString(
@@ -194,12 +201,12 @@ export function TicketTable({
                     </span>
                   </td>
 
-                  <td>
-                    <div className="ticket-actions">
+                  <td className="p-[18px] border-b border-[#eef2f7] text-slate-600 text-sm align-middle">
+                    <div className="flex items-center justify-end gap-2">
 
                       <button
                         type="button"
-                        className="ticket-action-button"
+                        className="w-8 h-8 flex items-center justify-center border-none rounded-lg bg-transparent text-slate-500 cursor-pointer hover:bg-blue-50 hover:text-blue-600"
                         onClick={() => onDeleteTicket(ticket)}
                         title="Excluir chamado"
                       >
@@ -208,7 +215,7 @@ export function TicketTable({
 
                       <button
                         type="button"
-                        className="ticket-action-button"
+                        className="w-8 h-8 flex items-center justify-center border-none rounded-lg bg-transparent text-slate-500 cursor-pointer hover:bg-blue-50 hover:text-blue-600"
                         title="Editar chamado"
                       >
                         <Pencil size={17} />
